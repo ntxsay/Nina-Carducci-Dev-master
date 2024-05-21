@@ -20,6 +20,9 @@ body {
 
 .top-header .name {
 	font-size: 26px;
+	/*Mise à jour lien accueil*/
+	text-decoration: none;
+	color: #000;
 }
 
 .nav ul {
