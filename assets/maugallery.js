@@ -121,11 +121,18 @@
     },
     prevImage() {
       let activeImage = null;
+      
+      /*Récupère l'image active en faisant une boucle sur toutes les images de la galerie
+       * pour vérifier que l'attribut src correspond à l'image de la modale. Si oui l'image de la galerie
+       * est copiée dans la variable activeImage
+       */
       $("img.gallery-item").each(function() {
         if ($(this).attr("src") === $(".lightboxImage").attr("src")) {
           activeImage = $(this);
         }
       });
+      
+      /*Récupère le tag actif*/
       let activeTag = $(".tags-bar span.active-tag").data("images-toggle");
       let imagesCollection = [];
       if (activeTag === "all") {
@@ -134,23 +141,30 @@
             imagesCollection.push($(this).children("img"));
           }
         });
-      } else {
+      } 
+      /*S'il s'agit d'un tag spécifique ex : Concert, Entreprise ...*/
+      else {
+        /* boucle tous les éléments contenant la classe "item-column" représentant le conteneur des images de la galerie
+         * et vérifie que la valeur de l'attribut data-gallery-tag de l'image enfant correspond à la valeur du tag actuel.
+         * si oui ajoute l'image dans le tableau "imagesCollection"
+         */
         $(".item-column").each(function() {
-          if (
-            $(this)
-              .children("img")
-              .data("gallery-tag") === activeTag
-          ) {
+          if ($(this).children("img").data("gallery-tag") === activeTag) {
             imagesCollection.push($(this).children("img"));
           }
         });
       }
-      let index = 0,
-        next = null;
+      
+      
+      let index = 0, next = null;
 
+      /*
+       * On boucle sur tout le contenu du tableau et si l'attribut src de l'une des images du tableau correspond à l'attribut src "activeImage"
+       * on récupère son index où on soustrait la valeur de -1 s'il est supérieur à 0 sinon il est gardé telle quelle
+       */
       $(imagesCollection).each(function(i) {
         if ($(activeImage).attr("src") === $(this).attr("src")) {
-          index = i ;
+          index = i > 0 ? i - 1 : i;
         }
       });
       next =
@@ -187,9 +201,13 @@
       let index = 0,
         next = null;
 
+      /*
+       * On boucle sur tout le contenu du tableau et si l'attribut src de l'une des images du tableau correspond à l'attribut src "activeImage"
+       * on récupère son index où on ajoute une valeur de + 1 s'il est inférieur au dernier index du tableau sinon il est gardé telle quelle
+       */
       $(imagesCollection).each(function(i) {
         if ($(activeImage).attr("src") === $(this).attr("src")) {
-          index = i;
+          index = i < imagesCollection.length - 1 ? i + 1 : i;
         }
       });
       next = imagesCollection[index] || imagesCollection[0];
@@ -235,12 +253,22 @@
         console.error(`Unknown tags position: ${position}`);
       }
     },
+
+    /**
+     * Filtre les tags
+     */
     filterByTag() {
+
+      //Si le filtre cliqué ("span.nav-link") contient la classe "active-tag", on sort de la fonction
       if ($(this).hasClass("active-tag")) {
         return;
       }
+
+      //Retire les classes "active" et "active-tag" des éléments qui ont la classe "active-tag"
       $(".active-tag").removeClass("active active-tag");
-      $(this).addClass("active-tag");
+
+      //Ajoute la classe "active-tag" au filtre cliqué ("span.nav-link")
+      $(this).addClass("active active-tag");
 
       var tag = $(this).data("images-toggle");
 
